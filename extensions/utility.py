@@ -29,7 +29,7 @@ async def ping(ctx: lightbulb.Context) -> None:
 @bot_plugin.command
 @lightbulb.add_checks(lightbulb.owner_only)
 @lightbulb.command("update", description="Pulls the latest source from GitHub and updates the bot.", auto_defer=True, ephemeral=True)
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def update(ctx: lightbulb.Context) -> None:
     output = os.popen('git pull').read()
     if "Already up to date." in output:

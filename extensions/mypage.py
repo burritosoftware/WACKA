@@ -34,7 +34,7 @@ async def setfriendcode(ctx: lightbulb.Context) -> None:
     "user", "The user to lookup their WACCA profile", hikari.User, required=True
 )
 @lightbulb.command("lookup", description="Looks up a user's WACCA profile.", auto_defer=False)
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def lookup(ctx: lightbulb.Context) -> None:
     table = await dataManager.tableLookup(ctx.bot, 'user')
     user = await dataManager.findUser(table, ctx.options.user.id)
@@ -55,7 +55,7 @@ async def lookup(ctx: lightbulb.Context) -> None:
     "friendcode", "The friend code to search for", str, required=True
 )
 @lightbulb.command("search", description="Looks up a user's WACCA profile through a friend code.", auto_defer=False)
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def search(ctx: lightbulb.Context) -> None:
     await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     res = await pageManager.getFriendInformation(ctx.bot, ctx.options.friendcode)

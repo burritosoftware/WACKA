@@ -46,6 +46,7 @@ async def createFriendEmbed(bot, res, cookie, friendcode):
     soup = BeautifulSoup(res, "html.parser")
     friendname = soup.find_all("div", class_="user-info__detail__name")[0].text
     friendtitle = soup.find_all("div", class_="user-info__detail__title")[0].text
+    friendlevel = soup.find_all("div", class_="user-info__detail__lv")[0].find("span").text.removeprefix('Lv.')
     friendicon = hikari.Bytes(await downloadFile(bot, soup.find_all("div", class_="icon__image")[0].find("img")['src'], cookie), 'icon.png')
     friendcolor = hikari.Bytes(await downloadFile(bot, soup.find_all("div", class_="symbol__color__base")[0].find("img")['src'], cookie), 'color.png')
     embed = (
@@ -56,16 +57,7 @@ async def createFriendEmbed(bot, res, cookie, friendcode):
         )
         .set_thumbnail(friendicon)
         .set_author(name=friendcode, icon=friendcolor)
-        # .set_footer(
-        #     text=f"Created by {res['uploader']['name']} | {uploader_code}",
-        #     icon=res['uploader']['mii_image'],
-        # )
-        # .add_field("Level", friendname, inline=True)
-        # .add_field("Boos", str(res['boos']), inline=True)
-        # .add_field("Clear Rate", res['clear_rate'], inline=True)
-        # .add_field("Difficulty", difficulty_name, inline=True)
-        # .add_field("Clears", str(res['clears']), inline=True)
-        # .add_field("Attempts", str(res['attempts']), inline=True)
+        .add_field("Level", friendlevel, inline=True)
         
         
     )
