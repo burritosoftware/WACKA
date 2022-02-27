@@ -2,4 +2,5 @@ hikari>=2.0.0.dev104
 hikari-lightbulb>=2.1.1
 python-dotenv>=0.19.2
 dataset>=1.5.2
+beautifulsoup4>=4.10.0
 uvloop>=0.16; sys_platform != "win32"

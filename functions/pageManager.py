@@ -1,6 +1,5 @@
 import hikari
 import aiohttp
-import aiofiles
 import functions.dataManager as dataManager
 from bs4 import BeautifulSoup
 
