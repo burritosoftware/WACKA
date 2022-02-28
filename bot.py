@@ -14,7 +14,7 @@ load_dotenv()
 logger = logging.getLogger('wacka.bot')
 
 # Initializing bot instance
-bot = lightbulb.BotApp(token=os.getenv('TOKEN'), prefix=os.getenv('PREFIX'), banner=None, intents=hikari.Intents.ALL_UNPRIVILEGED, default_enabled_guilds=(884484987758473217,))
+bot = lightbulb.BotApp(token=os.getenv('TOKEN'), prefix=os.getenv('PREFIX'), banner=None, intents=hikari.Intents.ALL_UNPRIVILEGED, default_enabled_guilds=(884484987758473217,623015907995811840,))
 miru.load(bot)
 
 # Create and close an aiohttp.ClientSession on start and stop of bot, add it to DataStore
