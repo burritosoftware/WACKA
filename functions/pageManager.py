@@ -32,6 +32,139 @@ async def getFriendInformation(bot, friendCode):
         else:
             return(res, cookieValue)
 
+async def getRequestStatus(bot, friendCode):
+    table = await dataManager.tableLookup(bot, 'cookie')
+    cookie = await dataManager.findKey(table, 'session_id')
+    cookies = {'WSID': cookie['value'], 'WUID': cookie['value']}
+    async with bot.d.aio_session.get(
+        baseurl + "/web/friend/request/applying",
+        headers=headers,
+        cookies=cookies
+
+    ) as response:
+        res = await response.text()
+
+        # Writing new cookie's value to the db
+        jar = bot.d.aio_session.cookie_jar.filter_cookies(baseurl)
+        for key, cookie in jar.items():
+            if cookie.key == 'WSID':
+                await dataManager.tableUpdate(table, dict(key='session_id', value=cookie.value), ['key'])
+
+        soup = BeautifulSoup(res, "html.parser")
+        requests = soup.find_all("div", class_="user-info__detail__req-cancel")
+        if requests == []:
+            return(False)
+
+        for friend in requests:
+            if friend['data-friend-code'] == friendCode:
+                return(True)
+        else:
+            return(False)
+
+async def getFriendedStatus(bot, friendCode):
+    table = await dataManager.tableLookup(bot, 'cookie')
+    cookie = await dataManager.findKey(table, 'session_id')
+    cookies = {'WSID': cookie['value'], 'WUID': cookie['value']}
+    async with bot.d.aio_session.get(
+        baseurl + "/web/friend/list",
+        headers=headers,
+        cookies=cookies
+
+    ) as response:
+        res = await response.text()
+
+        # Writing new cookie's value to the db
+        jar = bot.d.aio_session.cookie_jar.filter_cookies(baseurl)
+        for key, cookie in jar.items():
+            if cookie.key == 'WSID':
+                await dataManager.tableUpdate(table, dict(key='session_id', value=cookie.value), ['key'])
+
+        soup = BeautifulSoup(res, "html.parser")
+        friends = soup.find_all("div", class_="friend__playerdata")
+        if friends == []:
+            return(False)
+
+        for friend in friends:
+            if friend.find("form").find("input")['value'] == friendCode:
+                return(True)
+        else:
+            return(False)
+
+async def sendFriendRequest(bot, friendCode):
+    table = await dataManager.tableLookup(bot, 'cookie')
+    cookie = await dataManager.findKey(table, 'session_id')
+    cookies = {'WSID': cookie['value'], 'WUID': cookie['value']}
+    data = aiohttp.FormData({'friendCode': friendCode}, quote_fields=True, charset=None)
+    async with bot.d.aio_session.post(
+        baseurl + "/web/friend/find/request",
+        data=data,
+        headers=headers,
+        cookies=cookies
+
+    ) as response:
+        res = response.status
+
+        # Writing new cookie's value to the db
+        jar = bot.d.aio_session.cookie_jar.filter_cookies(baseurl)
+        for key, cookie in jar.items():
+            if cookie.key == 'WSID':
+                await dataManager.tableUpdate(table, dict(key='session_id', value=cookie.value), ['key'])
+
+        if res == 200:
+            return(True)
+        else:
+            return(False)
+
+async def cancelFriendRequest(bot, friendCode):
+    table = await dataManager.tableLookup(bot, 'cookie')
+    cookie = await dataManager.findKey(table, 'session_id')
+    cookies = {'WSID': cookie['value'], 'WUID': cookie['value']}
+    data = aiohttp.FormData({'friendCode': friendCode}, quote_fields=True, charset=None)
+    async with bot.d.aio_session.post(
+        baseurl + "/web/friend/request/cancelApply",
+        data=data,
+        headers=headers,
+        cookies=cookies
+
+    ) as response:
+        res = response.status
+
+        # Writing new cookie's value to the db
+        jar = bot.d.aio_session.cookie_jar.filter_cookies(baseurl)
+        for key, cookie in jar.items():
+            if cookie.key == 'WSID':
+                await dataManager.tableUpdate(table, dict(key='session_id', value=cookie.value), ['key'])
+
+        if res == 200:
+            return(True)
+        else:
+            return(False)
+
+async def unfriend(bot, friendCode):
+    table = await dataManager.tableLookup(bot, 'cookie')
+    cookie = await dataManager.findKey(table, 'session_id')
+    cookies = {'WSID': cookie['value'], 'WUID': cookie['value']}
+    data = aiohttp.FormData({'friendCode': friendCode}, quote_fields=True, charset=None)
+    async with bot.d.aio_session.post(
+        baseurl + "/web/friend/player/cancel",
+        data=data,
+        headers=headers,
+        cookies=cookies
+
+    ) as response:
+        res = response.status
+
+        # Writing new cookie's value to the db
+        jar = bot.d.aio_session.cookie_jar.filter_cookies(baseurl)
+        for key, cookie in jar.items():
+            if cookie.key == 'WSID':
+                await dataManager.tableUpdate(table, dict(key='session_id', value=cookie.value), ['key'])
+
+        if res == 200:
+            return(True)
+        else:
+            return(False)
+
 async def downloadFile(bot, path, cookie):
     cookies = {'WSID': cookie, 'WUID': cookie}
     async with bot.d.aio_session.get(
