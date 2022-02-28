@@ -79,7 +79,7 @@ async def linkprofile(ctx: lightbulb.Context) -> None:
                 await asyncio.sleep(10)
         else:
             await pageManager.cancelFriendRequest(ctx.bot, ctx.options.friendcode)
-            await ctx.respond("<:no:442206260151189518> Account linked timed out.")
+            await ctx.respond("<:no:442206260151189518> Account link timed out.")
 
 @cw_plugin.command
 @lightbulb.add_cooldown(length=2, uses=1, bucket=lightbulb.UserBucket)
