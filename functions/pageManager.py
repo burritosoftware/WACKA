@@ -2,6 +2,10 @@ import hikari
 import aiohttp
 import functions.dataManager as dataManager
 from bs4 import BeautifulSoup
+import aiofiles
+from aiofiles import os as aiofiles_os
+from aiofiles import ospath as aiofiles_ospath
+import os
 
 baseurl = "https://wacca.marv-games.jp"
 headers = {'Connection': 'keep-alive', 'Host': 'wacca.marv-games.jp', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 Edg/98.0.1108.62', 'Referer': baseurl}
@@ -166,13 +170,28 @@ async def unfriend(bot, friendCode):
             return(False)
 
 async def downloadFile(bot, path, cookie):
-    cookies = {'WSID': cookie, 'WUID': cookie}
-    async with bot.d.aio_session.get(
-        baseurl + path,
-        headers=headers,
-        cookies=cookies
-    ) as response:
-        return(await response.read())
+    workingDir = os.getcwd() + '\\cache'
+    localCache = workingDir + path.replace('/', '\\')
+    localCacheDir = os.path.dirname(localCache)
+    if not await aiofiles_ospath.exists(localCacheDir):
+        await aiofiles_os.makedirs(localCacheDir)
+    if not await aiofiles_ospath.exists(localCache):
+        cookies = {'WSID': cookie, 'WUID': cookie}
+        async with bot.d.aio_session.get(
+            baseurl + path,
+            headers=headers,
+            cookies=cookies
+        ) as response:
+            file = await response.read()
+            localCachedFile = await aiofiles.open(localCache, mode='wb')
+            await localCachedFile.write(file)
+            await localCachedFile.close()
+            return(file)
+    else:
+        file = await aiofiles.open(localCache, mode='rb')
+        bytes = await file.read()
+        await file.close()
+        return(bytes)
 
 async def createFriendEmbed(bot, res, cookie, friendcode):
     soup = BeautifulSoup(res, "html.parser")

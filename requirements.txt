@@ -4,4 +4,5 @@ python-dotenv>=0.19.2
 dataset>=1.5.2
 beautifulsoup4>=4.10.0
 hikari-miru>=1.1.1
+aiofiles>=0.8.0
 uvloop>=0.16; sys_platform != "win32"
