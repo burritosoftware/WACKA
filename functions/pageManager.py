@@ -171,7 +171,10 @@ async def unfriend(bot, friendCode):
 
 async def downloadFile(bot, path, cookie):
     workingDir = os.getcwd() + '\\cache'
-    localCache = workingDir + path.replace('/', '\\')
+    if os.name != "nt":
+        localCache = workingDir + path
+    else:
+        localCache = workingDir + path.replace('/', '\\')
     localCacheDir = os.path.dirname(localCache)
     if not await aiofiles_ospath.exists(localCacheDir):
         await aiofiles_os.makedirs(localCacheDir)
