@@ -172,7 +172,7 @@ async def unfriend(bot, friendCode):
 async def downloadFile(bot, path, cookie):
     workingDir = os.getcwd() + '\\cache'
     if os.name != "nt":
-        localCache = workingDir + pathreplace('\\', '/')
+        localCache = workingDir + path.replace('\\', '/')
     else:
         localCache = workingDir + path.replace('/', '\\')
     localCacheDir = os.path.dirname(localCache)
