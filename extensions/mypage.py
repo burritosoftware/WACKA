@@ -1,3 +1,4 @@
+from code import interact
 import hikari
 import lightbulb
 import miru
@@ -19,32 +20,28 @@ async def addOrUpdateUser(bot, id, friendcode) -> None:
 
 class ConfirmView(miru.View):
 
+    def __init__(self, *, timeout: float = 120, autodefer: bool = True) -> None:
+        self._inter: miru.Interaction = None
+        super().__init__(timeout=timeout, autodefer=autodefer)
+
     @miru.button(label="Confirm", style=hikari.ButtonStyle.SUCCESS, emoji=hikari.CustomEmoji(id=459224261136220170, name="yes", is_animated=False))
-    async def basic_button(self, button: miru.Button, ctx: miru.Context) -> None:
+    async def confirm_button(self, button: miru.Button, ctx: miru.Context) -> None:
         self.answer = True
-        for c in self.children:
-            c.disabled = True
-        await ctx.edit_response(components=self.build())
-        await ctx.respond("To finish linking, go to My Page and accept the request from Burrito. This must be done within 3 minutes.\nOnce done, you'll receive a confirmation message within a couple seconds. To cancel, decline the request.\n\nLink to Friend Requests: <https://wacca.marv-games.jp/web/friend/request/accepting>", flags=hikari.MessageFlag.EPHEMERAL)
+        await self._inter.edit_initial_response(":hourglass: To finish linking, login to My Page and accept the friend request from Burrito. This must be done within 3 minutes.\nOnce done, this message will edit to confirm the link. To cancel, decline the request.\n\nLink to friend requests: <https://wacca.marv-games.jp/web/friend/request/accepting>", components=None)
         self.stop()
 
     @miru.button(label="Cancel", style=hikari.ButtonStyle.DANGER, emoji=hikari.CustomEmoji(id=442206260151189518, name="no", is_animated=False))
-    async def stop_button(self, button: miru.Button, ctx: miru.Context) -> None:
+    async def cancel_button(self, button: miru.Button, ctx: miru.Context) -> None:
         self.answer = False
-        for c in self.children:
-            c.disabled = True
-        await ctx.edit_response(components=self.build())
-        await ctx.respond("<:no:442206260151189518> Account link cancelled.", flags=hikari.MessageFlag.EPHEMERAL)
+        await self._inter.edit_initial_response("<:no:442206260151189518> Profile link cancelled.", components=None, embed=None, replace_attachments=True)
         self.stop()
 
     async def on_timeout(self) -> None:
         self.answer = False
-        for c in self.children:
-            c.disabled = True
-        # await self.message.edit(components=self.build())
+        await self._inter.edit_initial_response(content="<:no:442206260151189518> Profile link timed out.", components=None, embed=None, replace_attachments=True)
 
 @cw_plugin.command
-@lightbulb.add_cooldown(length=20, uses=1, bucket=lightbulb.UserBucket)
+@lightbulb.add_cooldown(length=30, uses=1, bucket=lightbulb.UserBucket)
 @lightbulb.option(
     "friendcode", "The friend code of the profile to link", str, required=True
 )
@@ -57,8 +54,9 @@ async def linkprofile(ctx: lightbulb.Context) -> None:
     else:
         embed = await pageManager.createFriendEmbed(ctx.bot, res[0], res[1], ctx.options.friendcode)
     view = ConfirmView(timeout=20.0)
+    view._inter = ctx.interaction
     proxy = await ctx.respond(
-            "Please confirm that this is the account you want to link.", embed=embed, components=view.build()
+            ":hourglass: Please confirm that this is the profile you want to link.", embed=embed, components=view.build()
         )
     
     view.start(await proxy.message())  # Start listening for interactions
@@ -70,16 +68,16 @@ async def linkprofile(ctx: lightbulb.Context) -> None:
                 if await pageManager.getFriendedStatus(ctx.bot, ctx.options.friendcode) == True:
                     await pageManager.unfriend(ctx.bot, ctx.options.friendcode)
                     await addOrUpdateUser(ctx.bot, ctx.author.id, ctx.options.friendcode)
-                    await ctx.respond("<:yes:459224261136220170> Your account has been linked!")
+                    await ctx.interaction.edit_initial_response("<:yes:459224261136220170> This profile has been linked!")
                     break
                 else:
-                    await ctx.respond("<:no:442206260151189518> Account link cancelled.")
+                    await ctx.interaction.edit_initial_response("<:no:442206260151189518> Profile link cancelled.", embed=None, replace_attachments=True)
                     break
             else:
                 await asyncio.sleep(10)
         else:
             await pageManager.cancelFriendRequest(ctx.bot, ctx.options.friendcode)
-            await ctx.respond("<:no:442206260151189518> Account link timed out.")
+            await ctx.edit_last_response("<:no:442206260151189518> Profile link timed out.", embed=None, replace_attachments=True)
 
 @cw_plugin.command
 @lightbulb.add_cooldown(length=2, uses=1, bucket=lightbulb.UserBucket)
