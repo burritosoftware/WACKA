@@ -29,6 +29,11 @@ def blockingFindUser(table, id):
     record = table.find_one(id=id)
     return record
 
+# Provide a table and a userid, and this will delete their object from the db
+def blockingDeleteUser(table, id):
+    record = table.delete(id=id)
+    return record
+
 # Provide a table and a key, and this will return the cookie's object from the db
 def blockingFindKey(table, key):
     record = table.find_one(key=key)
@@ -52,6 +57,11 @@ def tableUpdate(table, dict, filter):
 @run_in_executor
 def findUser(table, id):
     resp = blockingFindUser(table, id)
+    return resp
+
+@run_in_executor
+def deleteUser(table, id):
+    resp = blockingDeleteUser(table, id)
     return resp
 
 @run_in_executor
