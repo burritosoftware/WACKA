@@ -13,7 +13,8 @@ An open-source Discord bot for the arcade rhythm game WACCA.
 python -m pip install -r requirements.txt
 ```
 
-2. Create a copy of the `.env-example` file to `.env` and fill in your bot token.
+2. Create a copy of the `.env-example` file to `.env` and fill in your bot token and Aime ID
+- To get the Aime ID, login on WACCA My Page, and before selecting profile, run this in the console: `document.getElementById('aimeId').value`
 ```
 cp .env-example .env
 nano .env
@@ -22,11 +23,6 @@ nano .env
 3. Start the bot.
 ```
 python bot.py
-```
-
-4. Grab your WSID cookie value from My Page once logged in, then set it using the following command:
-```
-/setcookie <cookiehere>
 ```
 
 Done!
