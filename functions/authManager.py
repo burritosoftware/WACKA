@@ -1,12 +1,13 @@
 import aiohttp
 import functions.dataManager as dataManager
+import os
 
 baseurl = "https://wacca.marv-games.jp"
 headers = {'Connection': 'keep-alive', 'Host': 'wacca.marv-games.jp', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39', 'Referer': baseurl}
 
-async def loginWithAimeID(bot, aimeID):
+async def loginWithAimeID(bot):
     table = await dataManager.tableLookup(bot, 'cookie')
-    data = aiohttp.FormData({'aimeId': aimeID}, quote_fields=False, charset='utf-8')
+    data = aiohttp.FormData({'aimeId': os.getenv('AIMEID')}, quote_fields=False, charset='utf-8')
     async with bot.d.aio_session.post(
         baseurl + "/web/login/exec",
         data=data,
@@ -50,6 +51,7 @@ async def getRequestText(bot, suffix):
             await dataManager.tableUpdate(table, dict(key='session_id', value=cookie), ['key'])
             return(await response.text())
         else:
+            await loginWithAimeID(bot)
             return(False)
 
 async def getRequestData(bot, suffix):
@@ -65,6 +67,7 @@ async def getRequestData(bot, suffix):
         if response.status == 200:
             return(await response.read())
         else:
+            await loginWithAimeID(bot)
             return(False)
 
 async def postRequestText(bot, suffix, data):
@@ -83,6 +86,7 @@ async def postRequestText(bot, suffix, data):
             await dataManager.tableUpdate(table, dict(key='session_id', value=cookie), ['key'])
             return(await response.text())
         else:
+            await loginWithAimeID(bot)
             return(False)
 
 async def postRequestStatus(bot, suffix, data):
@@ -101,4 +105,5 @@ async def postRequestStatus(bot, suffix, data):
             await dataManager.tableUpdate(table, dict(key='session_id', value=cookie), ['key'])
             return(True)
         else:
+            await loginWithAimeID(bot)
             return(False)

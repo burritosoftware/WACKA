@@ -30,7 +30,7 @@ async def on_starting(event: hikari.StartingEvent) -> None:
     logger.info("Added logger to datastore")
     bot.d.db = dataset.connect(os.getenv('DATABASE'), engine_kwargs=dict(connect_args={'check_same_thread': False}))
     logger.info(f"Connected to database {os.getenv('DATABASE')}")
-    loginStatus = await authManager.loginWithAimeID(bot, os.getenv('AIMEID'))
+    loginStatus = await authManager.loginWithAimeID(bot)
     if loginStatus == True:
         logger.info("Logged in with Aime")
     else:
@@ -56,7 +56,7 @@ async def on_started(event: hikari.StartedEvent) -> None:
 @bot.listen(lightbulb.CommandErrorEvent)
 async def on_error(event: lightbulb.CommandErrorEvent) -> None:
     if isinstance(event.exception, lightbulb.CommandInvocationError):
-        await event.context.respond(f"<:no:442206260151189518> An error occurred while running `{event.context.command.name}`. If this persists, please contact Burrito at <https://website.burrito.software/discord>.", flags=hikari.MessageFlag.EPHEMERAL)
+        await event.context.respond(f"<:no:442206260151189518> An error occurred while running `{event.context.command.name}`. Try again in a minute. If this persists, please contact Burrito at <https://website.burrito.software/discord>.", flags=hikari.MessageFlag.EPHEMERAL)
         raise event.exception
 
     # Unwrap the exception to get the original cause
