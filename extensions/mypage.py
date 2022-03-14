@@ -121,7 +121,7 @@ async def linkprofile(ctx: lightbulb.Context) -> None:
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def unlinkprofile(ctx: lightbulb.Context) -> None:
     if await getLinkedStatus(ctx.bot, ctx.author.id) == False:
-        await ctx.respond("<:no:442206260151189518> This account is not linked to a profile. To link one, use `/unlinkprofile`.")
+        await ctx.respond("<:no:442206260151189518> This account is not linked to a profile. To link one, use `/linkprofile`.")
         return
     
     table = await dataManager.tableLookup(ctx.bot, 'user')

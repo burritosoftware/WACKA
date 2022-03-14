@@ -9,27 +9,27 @@ import logging
 import dataset
 import functions.authManager as authManager
 
-# Loading .env values
+# Load .env values
 load_dotenv()
 
 # Create logger
 logger = logging.getLogger('wacka.bot')
 
-# Initializing bot instance
+# Initialize bot instance
 bot = lightbulb.BotApp(token=os.getenv('TOKEN'), prefix=os.getenv('PREFIX'), banner=None, intents=hikari.Intents.ALL_UNPRIVILEGED, default_enabled_guilds=(884484987758473217,623015907995811840,))
 miru.load(bot)
 
-# Create and close an aiohttp.ClientSession on start and stop of bot, add it to DataStore
-# Initialize database and add it to DataStore
 @bot.listen()
 async def on_starting(event: hikari.StartingEvent) -> None:
 
+    # Create a ClientSession to be used for the entire uptime of the bot
     bot.d.aio_session = aiohttp.ClientSession()
     logger.info("Created aiohttp.ClientSession")
     bot.d.logger = logger
     logger.info("Added logger to datastore")
     bot.d.db = dataset.connect(os.getenv('DATABASE'), engine_kwargs=dict(connect_args={'check_same_thread': False}))
     logger.info(f"Connected to database {os.getenv('DATABASE')}")
+    # Login to Aime and get a fresh new session cookie
     loginStatus = await authManager.loginWithAimeID(bot)
     if loginStatus == True:
         logger.info("Logged in with Aime")
@@ -38,21 +38,23 @@ async def on_starting(event: hikari.StartingEvent) -> None:
 
 @bot.listen()
 async def on_stopping(event: hikari.StoppingEvent) -> None:
+    # Log out of Aime
     logoutStatus = await authManager.logout(bot)
     if logoutStatus == True:
         logger.info("Logged out of Aime")
     else:
         logger.error("Failed to logout of Aime, likely due to maintenance")
+    # Close the ClientSession
     await bot.d.aio_session.close()
     logger.info("Closed aiohttp.ClientSession")
 
-# Update presence on started
+# Update presence on start
 @bot.listen()
 async def on_started(event: hikari.StartedEvent) -> None:
     await bot.update_presence(activity=hikari.Activity(name="/help | WACCA! 🧤"))
     logger.info("Updated presence")
 
-# Error Handler
+# Error handling
 @bot.listen(lightbulb.CommandErrorEvent)
 async def on_error(event: lightbulb.CommandErrorEvent) -> None:
     if isinstance(event.exception, lightbulb.CommandInvocationError):
