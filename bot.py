@@ -1,11 +1,13 @@
 import hikari
 import lightbulb
-import os
+import miru
 import aiohttp
+import os
+import sys
 from dotenv import load_dotenv
 import logging
 import dataset
-import miru
+import functions.authManager as authManager
 
 # Loading .env values
 load_dotenv()
@@ -22,15 +24,25 @@ miru.load(bot)
 @bot.listen()
 async def on_starting(event: hikari.StartingEvent) -> None:
 
-    bot.d.aio_session = aiohttp.ClientSession(cookie_jar=aiohttp.CookieJar())
+    bot.d.aio_session = aiohttp.ClientSession()
     logger.info("Created aiohttp.ClientSession")
     bot.d.logger = logger
     logger.info("Added logger to datastore")
     bot.d.db = dataset.connect(os.getenv('DATABASE'), engine_kwargs=dict(connect_args={'check_same_thread': False}))
     logger.info(f"Connected to database {os.getenv('DATABASE')}")
+    loginStatus = await authManager.loginWithAimeID(bot, os.getenv('AIMEID'))
+    if loginStatus == True:
+        logger.info("Logged in with Aime")
+    else:
+        logger.error("Failed to login with Aime, likely due to maintenance")
 
 @bot.listen()
 async def on_stopping(event: hikari.StoppingEvent) -> None:
+    logoutStatus = await authManager.logout(bot)
+    if logoutStatus == True:
+        logger.info("Logged out of Aime")
+    else:
+        logger.error("Failed to logout of Aime, likely due to maintenance")
     await bot.d.aio_session.close()
     logger.info("Closed aiohttp.ClientSession")
 
