@@ -8,15 +8,15 @@ from io import StringIO
 from contextlib import redirect_stdout
 import functions.dataManager as dataManager
 
-async def addOrUpdateCookie(bot, cookieid) -> None:
-    table = await dataManager.tableLookup(bot, 'cookie')
-    cookie = await dataManager.findKey(table, 'session_id')
-    if cookie == None:
-        await dataManager.tableInsert(table, dict(key='session_id', value=cookieid))
-        return(True)
-    else:
-        await dataManager.tableUpdate(table, dict(key='session_id', value=cookieid), ['key'])
-        return(False)
+# async def addOrUpdateCookie(bot, cookieid) -> None:
+#     table = await dataManager.tableLookup(bot, 'cookie')
+#     cookie = await dataManager.findKey(table, 'session_id')
+#     if cookie == None:
+#         await dataManager.tableInsert(table, dict(key='session_id', value=cookieid))
+#         return(True)
+#     else:
+#         await dataManager.tableUpdate(table, dict(key='session_id', value=cookieid), ['key'])
+#         return(False)
 
 bot_plugin = lightbulb.Plugin("Bot")
 
@@ -38,6 +38,17 @@ async def update(ctx: lightbulb.Context) -> None:
         ctx.bot.d.logger.info(f"Bot updated!\n\n{output}")
         await ctx.respond(f"<:yes:459224261136220170> **Update complete!** The bot will restart momentarily...\n\n```\n{output}\n```")
         await ctx.bot.update_presence(status=hikari.Status.IDLE, activity=hikari.Activity(name="Updating, please wait..."))
+        if os.name != "nt":
+            p = Popen(['pm2', 'restart', 'bot'])
+            p.poll()
+
+@bot_plugin.command
+@lightbulb.add_checks(lightbulb.owner_only)
+@lightbulb.command("restart", description="Restarts the bot.", auto_defer=True, ephemeral=True)
+@lightbulb.implements(lightbulb.SlashCommand)
+async def restart(ctx: lightbulb.Context) -> None:
+        await ctx.respond(f"<:yes:459224261136220170> The bot will restart momentarily...")
+        await ctx.bot.update_presence(status=hikari.Status.IDLE, activity=hikari.Activity(name="Restarting, please wait..."))
         if os.name != "nt":
             p = Popen(['pm2', 'restart', 'bot'])
             p.poll()
