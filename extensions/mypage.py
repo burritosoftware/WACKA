@@ -88,7 +88,7 @@ async def linkprofile(ctx: lightbulb.Context) -> None:
     if res == None:
         await ctx.respond("<:no:442206260151189518> This friend code is invalid.")
     else:
-        embed = await pageManager.createFriendEmbed(ctx.bot, res[0], res[1], ctx.options.friendcode)
+        embed = await pageManager.createFriendEmbed(ctx.bot, res, ctx.options.friendcode)
     view = LinkView(timeout=20.0)
     view._inter = ctx.interaction
     proxy = await ctx.respond(
@@ -127,7 +127,7 @@ async def unlinkprofile(ctx: lightbulb.Context) -> None:
     table = await dataManager.tableLookup(ctx.bot, 'user')
     user = await dataManager.findUser(table, ctx.author.id)
     res = await pageManager.getFriendInformation(ctx.bot, user['friendcode'])
-    embed = await pageManager.createFriendEmbed(ctx.bot, res[0], res[1], user['friendcode'])
+    embed = await pageManager.createFriendEmbed(ctx.bot, res, user['friendcode'])
 
     view = UnlinkView(timeout=20.0)
     view._inter = ctx.interaction
@@ -157,7 +157,7 @@ async def lookup(ctx: lightbulb.Context) -> None:
         if res == None:
             await ctx.respond("<:no:442206260151189518> This account has an invalid profile.")
         else:
-            embed = await pageManager.createFriendEmbed(ctx.bot, res[0], res[1], user['friendcode'])
+            embed = await pageManager.createFriendEmbed(ctx.bot, res, user['friendcode'])
             await ctx.respond(embed)
     else:
         await ctx.respond("<:no:442206260151189518> This account is not linked to a profile.", flags=hikari.MessageFlag.EPHEMERAL)
@@ -180,7 +180,7 @@ async def search(ctx: lightbulb.Context) -> None:
     if res == None:
         await ctx.respond("<:no:442206260151189518> This friend code is invalid.")
     else:
-        embed = await pageManager.createFriendEmbed(ctx.bot, res[0], res[1], ctx.options.friendcode)
+        embed = await pageManager.createFriendEmbed(ctx.bot, res, ctx.options.friendcode)
         await ctx.respond(embed)
 
 def load(bot: lightbulb.BotApp) -> None:
