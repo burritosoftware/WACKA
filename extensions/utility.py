@@ -74,19 +74,19 @@ async def eval(ctx: lightbulb.Context) -> None:
         else:
             await ctx.event.message.add_reaction(emoji="yes",emoji_id=459224261136220170)
 
-@bot_plugin.command
-@lightbulb.add_checks(lightbulb.owner_only)
-@lightbulb.option(
-    "cookie", "The cookie to add/update to/in the database", str, required=True
-)
-@lightbulb.command("setcookie", description="Sets next cookie to be used for My Page.", auto_defer=True, ephemeral=True)
-@lightbulb.implements(lightbulb.SlashCommand)
-async def setcookie(ctx: lightbulb.Context) -> None:
-    status = await addOrUpdateCookie(bot=ctx.bot, cookieid=ctx.options.cookie)
-    if status:
-        await ctx.respond("<:yes:459224261136220170> Added the cookie to the database!")
-    else:
-        await ctx.respond("<:yes:459224261136220170> Updated the cookie in the database!")
+# @bot_plugin.command
+# @lightbulb.add_checks(lightbulb.owner_only)
+# @lightbulb.option(
+#     "cookie", "The cookie to add/update to/in the database", str, required=True
+# )
+# @lightbulb.command("setcookie", description="Sets next cookie to be used for My Page.", auto_defer=True, ephemeral=True)
+# @lightbulb.implements(lightbulb.SlashCommand)
+# async def setcookie(ctx: lightbulb.Context) -> None:
+#     status = await addOrUpdateCookie(bot=ctx.bot, cookieid=ctx.options.cookie)
+#     if status:
+#         await ctx.respond("<:yes:459224261136220170> Added the cookie to the database!")
+#     else:
+#         await ctx.respond("<:yes:459224261136220170> Updated the cookie in the database!")
 
 # @bot_plugin.command
 # @lightbulb.add_checks(lightbulb.owner_only)
