@@ -38,7 +38,7 @@ class LinkView(miru.View):
     @miru.button(label="Confirm", style=hikari.ButtonStyle.SUCCESS, emoji=hikari.CustomEmoji(id=459224261136220170, name="yes", is_animated=False))
     async def confirm_button(self, button: miru.Button, ctx: miru.Context) -> None:
         self.answer = True
-        await self._inter.edit_initial_response(":hourglass: To finish linking, login to My Page and accept the friend request from Burrito. This must be done within 3 minutes.\nOnce done, this message will edit to confirm the link. To cancel, decline the request.\n\nLink to friend requests: <https://wacca.marv-games.jp/web/friend/request/accepting>", components=None)
+        await self._inter.edit_initial_response(":hourglass: To finish linking, login to My Page and accept the friend request from WACKA. This must be done within 3 minutes.\nOnce done, this message will edit to confirm the link. To cancel, decline the request.\n\nLink to friend requests: <https://wacca.marv-games.jp/web/friend/request/accepting>", components=None)
         self.stop()
 
     @miru.button(label="Cancel", style=hikari.ButtonStyle.DANGER, emoji=hikari.CustomEmoji(id=442206260151189518, name="no", is_animated=False))
