@@ -132,7 +132,7 @@ async def unlinkprofile(ctx: lightbulb.Context) -> None:
     view = UnlinkView(timeout=20.0)
     view._inter = ctx.interaction
     proxy = await ctx.respond(
-            ":hourglass: Please confirm that you want to unlink this profile.", embed=embed, components=view.build()
+            ":hourglass: Please confirm that you want to unlink this profile.\nこのプロファイルのリンクを解除することをご確認ください。", embed=embed, components=view.build()
         )
     
     view.start(await proxy.message())  # Start listening for interactions
