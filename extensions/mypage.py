@@ -139,7 +139,7 @@ async def unlinkprofile(ctx: lightbulb.Context) -> None:
     await view.wait()
     if view.answer == True:
         await dataManager.deleteUser(table, ctx.author.id)
-        await ctx.interaction.edit_initial_response("<:yes:459224261136220170> This profile has been unlinked.", components=None)
+        await ctx.interaction.edit_initial_response("<:yes:459224261136220170> This profile has been unlinked.\nこのプロフィールはリンクが解除されています。", components=None)
 
 @cw_plugin.command
 @lightbulb.add_cooldown(length=2, uses=1, bucket=lightbulb.UserBucket)
