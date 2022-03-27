@@ -16,7 +16,7 @@ load_dotenv()
 logger = logging.getLogger('wacka.bot')
 
 # Initialize bot instance
-bot = lightbulb.BotApp(token=os.getenv('TOKEN'), prefix=os.getenv('PREFIX'), banner=None, intents=hikari.Intents.ALL_UNPRIVILEGED, default_enabled_guilds=(884484987758473217,623015907995811840,))
+bot = lightbulb.BotApp(token=os.getenv('TOKEN'), prefix=os.getenv('PREFIX'), banner=None, intents=hikari.Intents.ALL_UNPRIVILEGED, default_enabled_guilds=(884484987758473217,623015907995811840,839466562460188682))
 miru.load(bot)
 
 @bot.listen()
@@ -58,16 +58,16 @@ async def on_started(event: hikari.StartedEvent) -> None:
 @bot.listen(lightbulb.CommandErrorEvent)
 async def on_error(event: lightbulb.CommandErrorEvent) -> None:
     if isinstance(event.exception, lightbulb.CommandInvocationError):
-        await event.context.respond(f"<:no:442206260151189518> An error occurred while running `{event.context.command.name}`. Try again in a minute. If this persists, please contact Burrito at <https://website.burrito.software/discord>.", flags=hikari.MessageFlag.EPHEMERAL)
+        await event.context.respond(f"<:no:442206260151189518> An error occurred while running `{event.context.command.name}`. Try again in a minute. If this persists, please contact Burrito at <https://website.burrito.software/discord>.\n`{event.context.command.name}`の実行中にエラーが発生しました。これでも解決しない場合は、ブリトー（<https://website.burrito.software/discord>）までご連絡ください。", flags=hikari.MessageFlag.EPHEMERAL)
         raise event.exception
 
     # Unwrap the exception to get the original cause
     exception = event.exception.__cause__ or event.exception
 
     if isinstance(exception, lightbulb.NotOwner):
-        await event.context.respond("<:no:442206260151189518> You are not the owner of this bot.", flags=hikari.MessageFlag.EPHEMERAL)
+        await event.context.respond("<:no:442206260151189518> You are not the owner of this bot.\nあなたはこのボットの所有者ではありません。", flags=hikari.MessageFlag.EPHEMERAL)
     elif isinstance(exception, lightbulb.CommandIsOnCooldown):
-        await event.context.respond(f":hourglass: This command is on cooldown. Retry in `{exception.retry_after:.2f}` seconds.", flags=hikari.MessageFlag.EPHEMERAL)
+        await event.context.respond(f":hourglass: This command is on cooldown. Retry in `{exception.retry_after:.2f}` seconds.\nこのコマンドはクールダウン中です。リトライは `{exception.retry_after:.2f}` 秒後に行われます。", flags=hikari.MessageFlag.EPHEMERAL)
     else:
         raise exception
 

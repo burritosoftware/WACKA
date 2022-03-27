@@ -38,18 +38,18 @@ class LinkView(miru.View):
     @miru.button(label="Confirm", style=hikari.ButtonStyle.SUCCESS, emoji=hikari.CustomEmoji(id=459224261136220170, name="yes", is_animated=False))
     async def confirm_button(self, button: miru.Button, ctx: miru.Context) -> None:
         self.answer = True
-        await self._inter.edit_initial_response(":hourglass: To finish linking, login to My Page and accept the friend request from WACKA. This must be done within 3 minutes.\nOnce done, this message will edit to confirm the link. To cancel, decline the request.\n\nLink to friend requests: <https://wacca.marv-games.jp/web/friend/request/accepting>", components=None)
+        await self._inter.edit_initial_response(":hourglass: To finish linking, login to My Page and accept the friend request from WACKA. This must be done within 3 minutes.\nOnce done, this message will edit to confirm the link. To cancel, decline the request.\nマイページにログインし、WACKAからのフレンドリクエストを承認することで連携が完了します。これは3分以内に行ってください。\n承諾すると、このメッセージが表示され、連携が完了します。キャンセルする場合は、リクエストをお断りください。\n\nLink to friend requests / フレンド申請へのリンク: <https://wacca.marv-games.jp/web/friend/request/accepting>", components=None)
         self.stop()
 
     @miru.button(label="Cancel", style=hikari.ButtonStyle.DANGER, emoji=hikari.CustomEmoji(id=442206260151189518, name="no", is_animated=False))
     async def cancel_button(self, button: miru.Button, ctx: miru.Context) -> None:
         self.answer = False
-        await self._inter.edit_initial_response("<:no:442206260151189518> Profile link cancelled.", components=None, embed=None, replace_attachments=True)
+        await self._inter.edit_initial_response("<:no:442206260151189518> Profile link cancelled.\nプロフィールリンク解除。", components=None, embed=None, replace_attachments=True)
         self.stop()
 
     async def on_timeout(self) -> None:
         self.answer = False
-        await self._inter.edit_initial_response(content="<:no:442206260151189518> Profile link timed out.", components=None, embed=None, replace_attachments=True)
+        await self._inter.edit_initial_response(content="<:no:442206260151189518> Profile link timed out.\nプロフィールリンクがタイムアウトしました。", components=None, embed=None, replace_attachments=True)
 
 class UnlinkView(miru.View):
 
@@ -60,7 +60,7 @@ class UnlinkView(miru.View):
     @miru.button(label="Cancel", style=hikari.ButtonStyle.DANGER, emoji=hikari.CustomEmoji(id=442206260151189518, name="no", is_animated=False))
     async def cancel_button(self, button: miru.Button, ctx: miru.Context) -> None:
         self.answer = False
-        await self._inter.edit_initial_response("<:no:442206260151189518> Profile unlink cancelled.", components=None, embed=None, replace_attachments=True)
+        await self._inter.edit_initial_response("<:no:442206260151189518> Profile unlink cancelled.\nプロファイルのリンク解除がキャンセルされました。", components=None, embed=None, replace_attachments=True)
         self.stop()
 
     @miru.button(label="Confirm", style=hikari.ButtonStyle.SUCCESS, emoji=hikari.CustomEmoji(id=459224261136220170, name="yes", is_animated=False))
@@ -70,7 +70,7 @@ class UnlinkView(miru.View):
 
     async def on_timeout(self) -> None:
         self.answer = False
-        await self._inter.edit_initial_response(content="<:no:442206260151189518> Profile unlink timed out.", components=None, embed=None, replace_attachments=True)
+        await self._inter.edit_initial_response(content="<:no:442206260151189518> Profile unlink timed out.\nプロファイルのアンリンクがタイムアウトしました。", components=None, embed=None, replace_attachments=True)
 
 @cw_plugin.command
 @lightbulb.add_cooldown(length=30, uses=1, bucket=lightbulb.UserBucket)
@@ -81,18 +81,18 @@ class UnlinkView(miru.View):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def linkprofile(ctx: lightbulb.Context) -> None:
     if await getLinkedStatus(ctx.bot, ctx.author.id) == True:
-        await ctx.respond("<:no:442206260151189518> This account is already linked to a profile. To unlink it, use `/unlinkprofile`.")
+        await ctx.respond("<:no:442206260151189518> This account is already linked to a profile. To unlink it, use `/unlinkprofile`.\nこのアカウントはすでにプロファイルにリンクされています。リンクを解除するには、`/unlinkprofile`を使用してください。")
         return
 
     res = await pageManager.getFriendInformation(ctx.bot, ctx.options.friendcode)
     if res == None:
-        await ctx.respond("<:no:442206260151189518> This friend code is invalid.")
+        await ctx.respond("<:no:442206260151189518> This friend code is invalid.\nこのフレンドコードは無効です。")
     else:
         embed = await pageManager.createFriendEmbed(ctx.bot, res, ctx.options.friendcode)
     view = LinkView(timeout=20.0)
     view._inter = ctx.interaction
     proxy = await ctx.respond(
-            ":hourglass: Please confirm that you want to link this profile.", embed=embed, components=view.build()
+            ":hourglass: Please confirm that you want to link this profile.\nこのプロフィールをリンクするかどうか、ご確認ください。", embed=embed, components=view.build()
         )
     
     view.start(await proxy.message())  # Start listening for interactions
@@ -104,16 +104,16 @@ async def linkprofile(ctx: lightbulb.Context) -> None:
                 if await pageManager.getFriendedStatus(ctx.bot, ctx.options.friendcode) == True:
                     await pageManager.unfriend(ctx.bot, ctx.options.friendcode)
                     await addOrUpdateUser(ctx.bot, ctx.author.id, ctx.options.friendcode)
-                    await ctx.interaction.edit_initial_response("<:yes:459224261136220170> This profile has been linked!")
+                    await ctx.interaction.edit_initial_response("<:yes:459224261136220170> This profile has been linked!\nこのプロフィールはリンクされています")
                     break
                 else:
-                    await ctx.interaction.edit_initial_response("<:no:442206260151189518> Profile link cancelled.", embed=None, replace_attachments=True)
+                    await ctx.interaction.edit_initial_response("<:no:442206260151189518> Profile link cancelled.\nプロフィールリンク解除。", embed=None, replace_attachments=True)
                     break
             else:
                 await asyncio.sleep(10)
         else:
             await pageManager.cancelFriendRequest(ctx.bot, ctx.options.friendcode)
-            await ctx.edit_last_response("<:no:442206260151189518> Profile link timed out.", embed=None, replace_attachments=True)
+            await ctx.edit_last_response("<:no:442206260151189518> Profile link timed out.\nプロフィールリンクがタイムアウトしました。", embed=None, replace_attachments=True)
 
 @cw_plugin.command
 @lightbulb.add_cooldown(length=30, uses=1, bucket=lightbulb.UserBucket)
@@ -121,7 +121,7 @@ async def linkprofile(ctx: lightbulb.Context) -> None:
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def unlinkprofile(ctx: lightbulb.Context) -> None:
     if await getLinkedStatus(ctx.bot, ctx.author.id) == False:
-        await ctx.respond("<:no:442206260151189518> This account is not linked to a profile. To link one, use `/linkprofile`.")
+        await ctx.respond("<:no:442206260151189518> This account is not linked to a profile. To link one, use `/linkprofile`.\nこのアカウントはプロファイルにリンクされていません。リンクさせるには、`/linkprofile`を使用してください。")
         return
     
     table = await dataManager.tableLookup(ctx.bot, 'user')
@@ -155,12 +155,12 @@ async def lookup(ctx: lightbulb.Context) -> None:
         await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         res = await pageManager.getFriendInformation(ctx.bot, user['friendcode'])
         if res == None:
-            await ctx.respond("<:no:442206260151189518> This account has an invalid profile.")
+            await ctx.respond("<:no:442206260151189518> This account has an invalid profile.\nこのアカウントは無効なプロフィールです。")
         else:
             embed = await pageManager.createFriendEmbed(ctx.bot, res, user['friendcode'])
             await ctx.respond(embed)
     else:
-        await ctx.respond("<:no:442206260151189518> This account is not linked to a profile.", flags=hikari.MessageFlag.EPHEMERAL)
+        await ctx.respond("<:no:442206260151189518> This account is not linked to a profile.\nこのアカウントはプロフィールと連動していません。", flags=hikari.MessageFlag.EPHEMERAL)
 
 @cw_plugin.command
 @lightbulb.add_cooldown(length=2, uses=1, bucket=lightbulb.UserBucket)
@@ -178,7 +178,7 @@ async def search(ctx: lightbulb.Context) -> None:
     await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     res = await pageManager.getFriendInformation(ctx.bot, ctx.options.friendcode)
     if res == None:
-        await ctx.respond("<:no:442206260151189518> This friend code is invalid.")
+        await ctx.respond("<:no:442206260151189518> This friend code is invalid.\nこのフレンドコードは無効です。")
     else:
         embed = await pageManager.createFriendEmbed(ctx.bot, res, ctx.options.friendcode)
         await ctx.respond(embed)
