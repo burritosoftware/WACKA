@@ -1,4 +1,3 @@
-from code import interact
 import hikari
 import lightbulb
 import miru
