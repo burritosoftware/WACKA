@@ -16,7 +16,8 @@ load_dotenv()
 logger = logging.getLogger('wacka.bot')
 
 # Initialize bot instance
-bot = lightbulb.BotApp(token=os.getenv('TOKEN'), prefix=os.getenv('PREFIX'), banner=None, intents=hikari.Intents.ALL_UNPRIVILEGED, default_enabled_guilds=(884484987758473217,623015907995811840,839466562460188682))
+# default_enabled_guilds=(884484987758473217,623015907995811840,839466562460188682)
+bot = lightbulb.BotApp(token=os.getenv('TOKEN'), prefix=os.getenv('PREFIX'), banner=None, help_slash_command=True, intents=hikari.Intents.ALL_UNPRIVILEGED)
 miru.load(bot)
 
 @bot.listen()
