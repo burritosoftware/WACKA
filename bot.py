@@ -45,6 +45,8 @@ async def on_stopping(event: hikari.StoppingEvent) -> None:
         logger.info("Logged out of Aime")
     else:
         logger.error("Failed to logout of Aime, likely due to maintenance")
+    bot.d.db.close()
+    logger.info("Closed database connection")
     # Close the ClientSession
     await bot.d.aio_session.close()
     logger.info("Closed aiohttp.ClientSession")
