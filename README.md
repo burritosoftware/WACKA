@@ -1,4 +1,9 @@
-# WACKA
+# WACKA, so long | [#ThankYouWACCA](https://twitter.com/BurritoSOFTWARE/status/1564838572049412096)
+As part of WACCA's online service shutdown, the API endpoints used in WACKA no longer are accessible and the bot will error on lookups.  
+Thank you for using WACKA! This code will be archived for reference.
+
+---
+
 An open-source Discord bot for the arcade rhythm game WACCA.
 
 ## Setup
